@@ -71,6 +71,6 @@ def format_seconds(num_seconds):
 
     # exact or float
     if num_seconds % 1:
-        return f'{num_seconds:,.2f} {unit}'
+        return f'{minus}{num_seconds:,.2f} {unit}'
     else:
-        return f'{num_seconds:,.0f} {unit}'
+        return f'{minus}{num_seconds:,.0f} {unit}'
