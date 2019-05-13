@@ -87,6 +87,7 @@ def format_seconds(num_seconds):
         if num_seconds % 1 and num_seconds > 1:
             return f'{minus}{num_seconds:,.2f} {unit}'
         elif num_seconds % 1:
+            # noinspection PyStringFormat
             num_seconds = f'{{N:,.{1 - int(math.floor(math.log10(abs(num_seconds))))}f}}'.format(N=num_seconds)
             return f'{minus}{num_seconds} {unit}'
         else:
