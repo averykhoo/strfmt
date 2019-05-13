@@ -52,25 +52,42 @@ def format_seconds(num_seconds):
     if num_seconds == 0:
         return '0 seconds'
 
-    # fractions of a second (should be improved with ms, μs, ns)
-    if num_seconds < 1:
-        # display 2 significant figures worth of decimals
-        return (f'{minus}%%0.%df seconds' % (1 - int(math.floor(math.log10(abs(num_seconds)))))) % num_seconds
+    # 1 or more seconds
+    if num_seconds >= 1:
+        unit = 0
+        denominators = [60.0, 60.0, 24.0, 7.0, 365.25 / 84.0, 12.0]
+        while unit < 6 and num_seconds > denominators[unit] * 0.9:
+            num_seconds /= denominators[unit]
+            unit += 1
+        unit = [u'seconds', u'minutes', u'hours', u'days', u'weeks', u'months', u'years'][unit]
 
-    # determine unit
-    unit = 0
-    denominators = [60.0, 60.0, 24.0, 7.0, 365.25 / 84.0, 12.0]
-    while unit < 6 and num_seconds > denominators[unit] * 0.9:
-        num_seconds /= denominators[unit]
-        unit += 1
-    unit = [u'seconds', u'minutes', u'hours', u'days', u'weeks', u'months', u'years'][unit]
+        # singular form
+        if num_seconds == 1:
+            unit = unit[:-1]
 
-    # singular form
-    if num_seconds == 1:
-        unit = unit[:-1]
+        # exact or float
+        if num_seconds % 1:
+            return f'{minus}{num_seconds:,.2f} {unit}'
+        else:
+            return f'{minus}{num_seconds:,.0f} {unit}'
 
-    # exact or float
-    if num_seconds % 1:
-        return f'{minus}{num_seconds:,.2f} {unit}'
+    # fractions of a second (ms, μs, ns)
     else:
-        return f'{minus}{num_seconds:,.0f} {unit}'
+        unit = 0
+        while unit < 3 and num_seconds < 0.9:
+            num_seconds *= 1000
+            unit += 1
+        unit = [u'seconds', u'milliseconds', u'microseconds', u'nanoseconds'][unit]
+
+        # singular form
+        if num_seconds == 1:
+            unit = unit[:-1]
+
+        # exact or float
+        if num_seconds % 1 and num_seconds > 1:
+            return f'{minus}{num_seconds:,.2f} {unit}'
+        elif num_seconds % 1:
+            num_seconds = f'{{N:,.{1 - int(math.floor(math.log10(abs(num_seconds))))}f}}'.format(N=num_seconds)
+            return f'{minus}{num_seconds} {unit}'
+        else:
+            return f'{minus}{num_seconds:,.0f} {unit}'
