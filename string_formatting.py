@@ -4,7 +4,14 @@ from typing import Dict
 from typing import Union
 
 
-def format_bytes(num_bytes: int) -> str:
+def format_bytes(num_bytes: int, si_units=False) -> str:
+    # handle SI units (1000x instead of 1024x)
+    _units = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
+    _divisor = 1024.0
+    if si_units:
+        _units = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+        _divisor = 1000.0
+    
     # handle negatives
     if num_bytes < 0:
         minus = '-'
@@ -18,10 +25,10 @@ def format_bytes(num_bytes: int) -> str:
 
     # determine unit
     unit = 0
-    while unit < 8 and num_bytes > 999:
-        num_bytes /= 1024.0
+    while unit < 8 and num_bytes > (_divisor * 0.97):  # fuzz factor to bump it up to the next level
+        num_bytes /= _divisor
         unit += 1
-    unit = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'][unit]
+    unit = _units[unit]
 
     # exact or float
     if num_bytes % 1:
