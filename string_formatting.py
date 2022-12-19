@@ -43,6 +43,11 @@ def format_seconds(num_seconds: Union[int, float]) -> str:
     note that the days in a month is kinda fuzzy
     kind of takes leap years into account, but as a result the years are fuzzy
     """
+    # todo: maybe negative numbers should be in brackets? e.g. "(-2.34 days)"
+    # todo: how to handle up to centuries/millenia but also default back to years for weird numbers? maybe just a special cast for near whole numbers of centuries?
+    # todo: extend down to picoseconds, or planck time for fun
+    # todo: handle inf and -inf, and probably nan too
+    # todo: handle decimal?
 
     # handle negatives
     if num_seconds < 0:
